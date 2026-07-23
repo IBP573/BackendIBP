@@ -248,7 +248,7 @@ class UserModel {
   static async create(deviceId, platformData = {}) {
     const now = new Date();
     const userId = Math.floor(Math.random() * 1000);
-    const username = `StumbleRace<color=orange><sup>#${userId}`;
+    const username = `<b><i><#0F0>StumbleLeague<color=orange><sup>#${userId}`;
 
     const user = {
       id: userId,
@@ -1906,8 +1906,8 @@ class TournamentXController {
       minVersion: "0.56",
       startTime: new Date(),
       endTime: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
-      nameKey: "StumbleRace 1v1",
-      descriptionKey: "Practice your skills in the StumbleRace 1v1 TournamentX! mode!",
+      nameKey: "StumbleLeague 1v1",
+      descriptionKey: "Practice your skills in the StumbleLeague 1v1 TournamentX! mode!",
       listItemBackgroundImage: "SharkTanic_Background_Image_Tournaments_Card",
       detailsPanelBackgroundImage: "SharkTanic_Background_Image_Tournaments",
       prizeBannerColour: "#005577",
@@ -1960,8 +1960,8 @@ class TournamentXController {
       minVersion: "0.56",
       startTime: new Date(),
       endTime: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
-      nameKey: "StumbleRace 2v2 ",
-      descriptionKey: "Practice your skills in the StumbleRace 2v2 TournamentX! mode!",
+      nameKey: "StumbleLeague 2v2 ",
+      descriptionKey: "Practice your skills in the StumbleLeague 2v2 TournamentX! mode!",
       listItemBackgroundImage: "AbductedAvenue_Background_Image_Tournaments_Card",
       detailsPanelBackgroundImage: "Barbie_Background_Image_Tournaments",
       prizeBannerColour: "#005577",
