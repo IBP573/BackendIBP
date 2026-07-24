@@ -736,7 +736,7 @@ class UserController {
       const config = {
         _SharedVersion: 2,
         Versions: {
-          AndroidLastVersionAvailable: 0.59
+          AndroidLastVersionAvailable: 0.100
         },
         BattlePassRotation: SharedData.BattlePassRotation || [],
         BattlePassesV3: SharedData.BattlePasses || [],
@@ -1903,7 +1903,7 @@ class TournamentXController {
       id: 1,
       type: 1,
       isEnabled: true,
-      minVersion: "0.56",
+      minVersion: "0.100",
       startTime: new Date(),
       endTime: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
       nameKey: "StumbleHard 1v1",
@@ -1957,7 +1957,7 @@ class TournamentXController {
       id: 2,
       type: 1,
       isEnabled: true,
-      minVersion: "0.56",
+      minVersion: "0.100",
       startTime: new Date(),
       endTime: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
       nameKey: "StumbleHard 2v2 ",
