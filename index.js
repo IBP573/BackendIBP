@@ -38,7 +38,7 @@ app.use(authenticate);
 app.get("/", (req, res) => {
   res.status(200).json({
     status: "ONLINE",
-    message: "Stumble Race Backend funcionando perfeitamente!",
+    message: "Stumble IBP Backend funcionando perfeitamente!",
     version: process.env.version || "1.0.0",
     timestamp: new Date().toISOString()
   });
