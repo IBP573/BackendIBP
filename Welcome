@@ -1,58 +1,33 @@
-const { HarmonyPatch, HarmonyPostfix } = require('melonjs');
-const { PlayViewController, PopupManager, PopupController } = require('il2cpp');
-const { TextMeshProUGUI, Image, Color } = require('unity');
+const express = require('express');
+const app = express();
+const PORTA = 3000;
 
-let shown = false;
+// Status do popup
+let popupAtivo = true;
 
-HarmonyPatch(PlayViewController, 'Start', () => {
-  HarmonyPostfix(async () => {
-    if (shown) return;
-    shown = true;
-
-    try {
-      const popup = PopupManager.Instance.OpenPopup('InfoPopup', 0);
-      if (!popup) return;
-
-      // 🔹 TÍTULO DE CIMA (antes era Language)
-      const tituloPrincipal = popup.transform.Find('Title');
-      if (tituloPrincipal) {
-        const txtTitulo = tituloPrincipal.GetComponent(TextMeshProUGUI);
-        if (txtTitulo) {
-          txtTitulo.text = 'Stumble sla';
-          txtTitulo.fontSize = 34;
-          txtTitulo.color = Color.white;
-        }
-      }
-
-      // DESCRIÇÃO
-      const desc = popup.transform.Find('TextBG/Description');
-      if (desc) {
-        const txt = desc.GetComponent(TextMeshProUGUI);
-        if (txt) {
-          txt.text = 
-`Welcome to Stumble sla! This is a special mod of
-Stumble Guys version 0.56 created by <color=yellow>@ibp</color>,
-designed to bring you extra fun, chaos, and excitement
-
-Thanks to <color=yellow>IBP?</color> who helped me get the project :)
-Enjoy every stumble and have an amazing time!`;
-          txt.fontSize = 20;
-          txt.alignment = TextAlignmentOptions.Center;
-        }
-      }
-
-      // BOTÃO
-      const button = popup.transform.Find('Button');
-      if (button) {
-        const txtBtn = button.GetComponentInChildren(TextMeshProUGUI);
-        if (txtBtn) txtBtn.text = "let's play!";
-
-        const imgBtn = button.GetComponent(Image);
-        if (imgBtn) imgBtn.color = Color.white;
-      }
-
-    } catch (ex) {
-      console.error(ex);
-    }
+// Rota para o jogo consultar
+app.get('/status-popup', (req, res) => {
+  res.json({
+    ativo: popupAtivo,
+    titulo: "Stumble sla",
+    descricao: "Welcome to Stumble sla! This is a special mod of\nStumble Guys version 0.56 created by <color=yellow>@ibp</color>,\ndesigned to bring you extra fun, chaos, and excitement\n\nThanks to <color=yellow>IBP?</color> who helped me get the project :)\nEnjoy every stumble and have an amazing time!",
+    textoBotao: "let's play!",
+    corBotao: "white"
   });
+});
+
+// Rota para ligar/desligar o popup
+app.get('/popup/ligar', (req, res) => {
+  popupAtivo = true;
+  res.send("✅ Popup ATIVADO");
+});
+
+app.get('/popup/desligar', (req, res) => {
+  popupAtivo = false;
+  res.send("❌ Popup DESATIVADO");
+});
+
+app.listen(PORTA, () => {
+  console.log(`✅ Backend rodando na porta ${PORTA}`);
+  console.log(`🔗 Consultar: http://localhost:${PORTA}/status-popup`);
 });
