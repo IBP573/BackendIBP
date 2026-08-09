@@ -248,7 +248,7 @@ class UserModel {
   static async create(deviceId, platformData = {}) {
     const now = new Date();
     const userId = Math.floor(Math.random() * 1000);
-    const username = `<b><i><color=green>StumbleBrasil<color=orange><sup>#${userId}`;
+    const username = `<b><i><color=purple>Lz League<color=orange><sup>#${userId}`;
 
     const user = {
       id: userId,
@@ -1906,8 +1906,8 @@ class TournamentXController {
       minVersion: "0.100",
       startTime: new Date(),
       endTime: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
-      nameKey: "Duels  1v1",
-      descriptionKey: "Practice your skills in the Stunmble Brasil 1v1 TournamentX! mode!",
+      nameKey: "Lz league  1v1",
+      descriptionKey: "Practice your skills in the lz league 1v1 TournamentX! mode!",
       listItemBackgroundImage: "SharkTanic_Background_Image_Tournaments_Card",
       detailsPanelBackgroundImage: "SharkTanic_Background_Image_Tournaments",
       prizeBannerColour: "#005577",
@@ -1960,8 +1960,8 @@ class TournamentXController {
       minVersion: "0.100",
       startTime: new Date(),
       endTime: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
-      nameKey: "Stumble Brasil 2v2 ",
-      descriptionKey: "Practice your skills in the StumbleBrasil 2v2 TournamentX! mode!",
+      nameKey: "lz league 2v2 ",
+      descriptionKey: "Practice your skills in the lz league 2v2 TournamentX! mode!",
       listItemBackgroundImage: "AbductedAvenue_Background_Image_Tournaments_Card",
       detailsPanelBackgroundImage: "Barbie_Background_Image_Tournaments",
       prizeBannerColour: "#005577",
@@ -2002,7 +2002,7 @@ class TournamentXController {
             { placementRangeLowest: 1, placementRangeHighest: 1, awardId: 1, type: "XP", amount: 200 },
             { placementRangeLowest: 1, placementRangeHighest: 1, awardId: 2, type: "TROPHIES", amount: 15 },
             { placementRangeLowest: 1, placementRangeHighest: 1, awardId: 3, type: "TOURNAMENTXP", amount: 50 },
-            { placementRangeLowest: 1, placementRangeHighest: 1, awardId: 4, type: "CROWNS", amount: 1 }
+            { placementRangeLowest: 1, placementRangeHighest: 1, awardId: 4, type: "GEMS", amount: 1 }
           ],
       players: [],
       partys: []
