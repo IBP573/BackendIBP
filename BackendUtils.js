@@ -2854,11 +2854,23 @@ async function OnlineCheck(req, res) {
 }
 // In-memory profiles holder (4 slots) for development/testing
 const Me = { Users: [
-  { id: '051', Name: '<color=red>IBP ego' },
+  { id: '', Name: '' },
   { id: '', Name: '' },
   { id: '', Name: '' },
   { id: '', Name: '' }
 ] };
+
+// Backwards-compat: manter Me.User para código existente (aponta para slot 0)
+Object.defineProperty(Me, 'User', {
+  get() {
+    return Me.Users[0];
+  },
+  set(value) {
+    Me.Users[0] = { ...Me.Users[0], ...value };
+  },
+  enumerable: true,
+  configurable: false
+});
 
 // setProfile(slot, user) or setProfile(user) for slot 0 (backwards compat)
 function setProfile(slotOrUser, userOptional) {
