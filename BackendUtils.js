@@ -23,6 +23,32 @@ const BackendUtils = {
     } catch {
       return null;
     }
+
+// Registers simple HTTP routes on an Express app to manage the in-memory profiles
+function registerProfileRoutes(app) {
+  if (!app || typeof app.get !== 'function') return;
+
+  // list all profiles
+  app.get('/profiles', (req, res) => {
+    res.json(getAllProfiles());
+  });
+
+  // get profile by slot (0-3)
+  app.get('/profiles/:slot', (req, res) => {
+    const slot = Math.max(0, Math.min(3, parseInt(req.params.slot, 10) || 0));
+    res.json(getProfile(slot));
+  });
+
+  // set profile by slot (POST JSON body). If no slot provided, uses slot 0.
+  app.post('/profiles/:slot?', express.json(), (req, res) => {
+    const slotParam = req.params.slot;
+    const slot = slotParam === undefined ? 0 : Math.max(0, Math.min(3, parseInt(slotParam, 10) || 0));
+    const user = req.body;
+    if (!user || typeof user !== 'object') return res.status(400).json({ message: 'Invalid body' });
+    const updated = setProfile(slot, user);
+    res.json(updated);
+  });
+}
   },
   createLoginHash: (deviceId, version, timestamp, stumbleId, steamTicket, scopelyId) => {
     const hashInput = `${deviceId}${version}${timestamp}${stumbleId || ''}${steamTicket || ''}${scopelyId || ''}${process.env.LeagueSalt}`;
@@ -2854,8 +2880,8 @@ async function OnlineCheck(req, res) {
 }
 // In-memory profiles holder (4 slots) for development/testing
 const Me = { Users: [
-  { id: '941', Name: 'IBP<sup><color=black>Dev' },
-  { id: '051', Name: 'IBP is back' },
+  { id: '', Name: '' },
+  { id: '', Name: '' },
   { id: '', Name: '' },
   { id: '', Name: '' }
 ] };
@@ -2946,5 +2972,6 @@ module.exports = {
   setProfile,
   getProfile,
   getAllProfiles,
+  registerProfileRoutes,
   ProfileViewController
 };
