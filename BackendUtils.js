@@ -24,31 +24,35 @@ const BackendUtils = {
       return null;
     }
 
-// Registers simple HTTP routes on an Express app to manage the in-memory profiles
-function registerProfileRoutes(app) {
-  if (!app || typeof app.get !== 'function') return;
+// Localization overrides similar to Harmony postfix in C#
+const LocalizationOverrides = {
+  LOGGING_IN: "<color=purple> Lz League<sup><color=yellow>The best",
+  WAITING_PLAYERS: "Waiting for Lz  Players",
+  CONNECTING: "Connecting to Lz gameservers!"
+};
 
-  // list all profiles
-  app.get('/profiles', (req, res) => {
-    res.json(getAllProfiles());
-  });
+// Attempts to patch a LocalizationManager-like object by replacing its GetTranslation method
+function applyLocalizationPatches(target) {
+  try {
+    const lm = target || (global.LocalizationManager ? global.LocalizationManager : (typeof LocalizationManager !== 'undefined' ? LocalizationManager : null));
+    if (!lm) return false;
 
-  // get profile by slot (0-3)
-  app.get('/profiles/:slot', (req, res) => {
-    const slot = Math.max(0, Math.min(3, parseInt(req.params.slot, 10) || 0));
-    res.json(getProfile(slot));
-  });
-
-  // set profile by slot (POST JSON body). If no slot provided, uses slot 0.
-  app.post('/profiles/:slot?', express.json(), (req, res) => {
-    const slotParam = req.params.slot;
-    const slot = slotParam === undefined ? 0 : Math.max(0, Math.min(3, parseInt(slotParam, 10) || 0));
-    const user = req.body;
-    if (!user || typeof user !== 'object') return res.status(400).json({ message: 'Invalid body' });
-    const updated = setProfile(slot, user);
-    res.json(updated);
-  });
+    if (typeof lm.GetTranslation === 'function') {
+      const original = lm.GetTranslation.bind(lm);
+      lm.GetTranslation = function(key) {
+        if (LocalizationOverrides.hasOwnProperty(key)) return LocalizationOverrides[key];
+        try { return original(key); } catch { return '' };
+      };
+      return true;
+    }
+  } catch (e) {
+    // ignore errors
+  }
+  return false;
 }
+
+// auto-apply on load if possible
+try { applyLocalizationPatches(); } catch {}
   },
   createLoginHash: (deviceId, version, timestamp, stumbleId, steamTicket, scopelyId) => {
     const hashInput = `${deviceId}${version}${timestamp}${stumbleId || ''}${steamTicket || ''}${scopelyId || ''}${process.env.LeagueSalt}`;
@@ -2878,72 +2882,7 @@ async function sendShared(req, res) {
 async function OnlineCheck(req, res) {
   res.status(200).send("OK");
 }
-// In-memory profiles holder (4 slots) for development/testing
-const Me = { Users: [
-  { id: '', Name: '' },
-  { id: '', Name: '' },
-  { id: '', Name: '' },
-  { id: '', Name: '' }
-] };
 
-// Backwards-compat: manter Me.User para código existente (aponta para slot 0)
-Object.defineProperty(Me, 'User', {
-  get() {
-    return Me.Users[0];
-  },
-  set(value) {
-    Me.Users[0] = { ...Me.Users[0], ...value };
-  },
-  enumerable: true,
-  configurable: false
-});
-
-// setProfile(slot, user) or setProfile(user) for slot 0 (backwards compat)
-function setProfile(slotOrUser, userOptional) {
-  let slot = 0;
-  let user;
-  if (userOptional === undefined) {
-    user = slotOrUser;
-    slot = 0;
-  } else {
-    slot = parseInt(slotOrUser, 10) || 0;
-    user = userOptional;
-  }
-  slot = Math.max(0, Math.min(3, slot));
-  Me.Users[slot] = { ...Me.Users[slot], ...user };
-  return Me.Users[slot];
-}
-
-// getProfile(slot) with default 0
-function getProfile(slot = 0) {
-  slot = parseInt(slot, 10) || 0;
-  slot = Math.max(0, Math.min(3, slot));
-  return Me.Users[slot];
-}
-
-function getAllProfiles() {
-  return Me.Users.slice();
-}
-
-// Optional controller class (works server-side) to manage a profile slot
-class ProfileViewController {
-  constructor(slot = 0) {
-    this.slot = Math.max(0, Math.min(3, parseInt(slot, 10) || 0));
-  }
-
-  setUser(user) {
-    return setProfile(this.slot, user);
-  }
-
-  getUser() {
-    return getProfile(this.slot);
-  }
-
-  // returns a plain object representation
-  toObject() {
-    return { slot: this.slot, user: this.getUser() };
-  }
-}
 module.exports = {
   BackendUtils,
   Database,
@@ -2966,12 +2905,9 @@ module.exports = {
   sendShared,
   OnlineCheck,
   VerifyPhoton,
-  generatePhotonJwt,
-  // exports for in-memory profile (dev/tests)
-  Me,
-  setProfile,
-  getProfile,
-  getAllProfiles,
-  registerProfileRoutes,
-  ProfileViewController
+  generatePhotonJwt
+  ,
+  // localization helpers
+  LocalizationOverrides,
+  applyLocalizationPatches
 };
