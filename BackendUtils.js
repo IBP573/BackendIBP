@@ -2852,7 +2852,60 @@ async function sendShared(req, res) {
 async function OnlineCheck(req, res) {
   res.status(200).send("OK");
 }
+// In-memory profiles holder (4 slots) for development/testing
+const Me = { Users: [
+  { id: '', Name: '' },
+  { id: '', Name: '' },
+  { id: '', Name: '' },
+  { id: '', Name: '' }
+] };
 
+// setProfile(slot, user) or setProfile(user) for slot 0 (backwards compat)
+function setProfile(slotOrUser, userOptional) {
+  let slot = 0;
+  let user;
+  if (userOptional === undefined) {
+    user = slotOrUser;
+    slot = 0;
+  } else {
+    slot = parseInt(slotOrUser, 10) || 0;
+    user = userOptional;
+  }
+  slot = Math.max(0, Math.min(3, slot));
+  Me.Users[slot] = { ...Me.Users[slot], ...user };
+  return Me.Users[slot];
+}
+
+// getProfile(slot) with default 0
+function getProfile(slot = 0) {
+  slot = parseInt(slot, 10) || 0;
+  slot = Math.max(0, Math.min(3, slot));
+  return Me.Users[slot];
+}
+
+function getAllProfiles() {
+  return Me.Users.slice();
+}
+
+// Optional controller class (works server-side) to manage a profile slot
+class ProfileViewController {
+  constructor(slot = 0) {
+    this.slot = Math.max(0, Math.min(3, parseInt(slot, 10) || 0));
+  }
+
+  setUser(user) {
+    return setProfile(this.slot, user);
+  }
+
+  getUser() {
+    return getProfile(this.slot);
+  }
+
+  // returns a plain object representation
+  toObject() {
+    return { slot: this.slot, user: this.getUser() };
+  }
+}
 module.exports = {
   BackendUtils,
   Database,
@@ -2875,5 +2928,11 @@ module.exports = {
   sendShared,
   OnlineCheck,
   VerifyPhoton,
-  generatePhotonJwt
+  generatePhotonJwt,
+  // exports for in-memory profile (dev/tests)
+  Me,
+  setProfile,
+  getProfile,
+  getAllProfiles,
+  ProfileViewController
 };
