@@ -26,9 +26,9 @@ const BackendUtils = {
 
 // Localization overrides similar to Harmony postfix in C#
 const LocalizationOverrides = {
-  LOGGING_IN: "<color=purple> Lz League<sup><color=yellow>The best",
-  WAITING_PLAYERS: "Waiting for Lz  Players",
-  CONNECTING: "Connecting to Lz gameservers!"
+  LOGGING_IN: ".gg/sgbrasil",
+  WAITING_PLAYERS: "Waiting for Stumble Brasil Players",
+  CONNECTING: "Connecting to Stumble Brasil gameservers!"
 };
 
 // Attempts to patch a LocalizationManager-like object by replacing its GetTranslation method
@@ -53,6 +53,40 @@ function applyLocalizationPatches(target) {
 
 // auto-apply on load if possible
 try { applyLocalizationPatches(); } catch {}
+
+// Registers HTTP routes to inspect/set localization overrides
+function registerLocalizationRoutes(app) {
+  if (!app || typeof app.get !== 'function') return;
+
+  // retorna todas as overrides
+  app.get('/translation', (req, res) => {
+    res.json(LocalizationOverrides);
+  });
+
+  // retorna uma chave específica (override ou original se disponível)
+  app.get('/translation/:key', (req, res) => {
+    const key = req.params.key;
+    if (LocalizationOverrides.hasOwnProperty(key)) return res.json({ key, value: LocalizationOverrides[key] });
+
+    const lm = global.LocalizationManager ? global.LocalizationManager : (typeof LocalizationManager !== 'undefined' ? LocalizationManager : null);
+    if (lm && typeof lm.GetTranslation === 'function') {
+      try {
+        return res.json({ key, value: lm.GetTranslation(key) });
+      } catch {}
+    }
+
+    res.status(404).json({ message: 'Not found' });
+  });
+
+  // define/atualiza override para uma chave (body: { value: '...' })
+  app.post('/translation/:key', express.json(), (req, res) => {
+    const key = req.params.key;
+    const value = req.body && req.body.value;
+    if (typeof value !== 'string') return res.status(400).json({ message: 'Invalid value' });
+    LocalizationOverrides[key] = value;
+    res.json({ key, value });
+  });
+}
   },
   createLoginHash: (deviceId, version, timestamp, stumbleId, steamTicket, scopelyId) => {
     const hashInput = `${deviceId}${version}${timestamp}${stumbleId || ''}${steamTicket || ''}${scopelyId || ''}${process.env.LeagueSalt}`;
