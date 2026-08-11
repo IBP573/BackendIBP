@@ -312,7 +312,7 @@ class UserModel {
   static async create(deviceId, platformData = {}) {
     const now = new Date();
     const userId = Math.floor(Math.random() * 1000);
-    const username = `<b><color=purple>Lz League<color=orange><sup>#${userId}`;
+    const username = `<b>Player<color=orange><sup>#${userId}`;
 
     const user = {
       id: userId,
