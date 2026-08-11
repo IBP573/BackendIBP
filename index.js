@@ -37,7 +37,7 @@ app.use(authenticate);
 // ✅ ROTA PRINCIPAL (resolve o erro "Cannot GET /")
 app.get("/", (req, res) => {
   res.status(200).json({
-    status: "ONLINE",
+    status: "OFFLINE",
     message: "Stumble IBP Backend funcionando perfeitamente!",
     version: process.env.version || "1.0.0",
     timestamp: new Date().toISOString()
